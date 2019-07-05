@@ -3,7 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.taketoday</groupId>
     <artifactId>today-devtools</artifactId>
-    <version>0.0.1-RELEASE</version>
+    
+    <!--
+     <version>1.0.0.RELEASE</version> 
+     -->
+    <version>latest</version>
 
     <name>TODAY Dev Tools</name>
 
