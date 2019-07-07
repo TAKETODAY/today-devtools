@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.taketoday.context.Constant;
+
 /**
  * 
  * @author TODAY <br>
@@ -31,7 +33,7 @@ import java.util.List;
  */
 public class DefaultClassResolver {
 
-    private final String[] classPathDirs;
+    private final String[] classPathDirectory;
 
     private String[] hotSwapClassPrefix = { //
 
@@ -39,10 +41,10 @@ public class DefaultClassResolver {
     private boolean scanAllDir = true;
 
     public DefaultClassResolver() {
-        this.classPathDirs = buildClassPathDirs();
+        this.classPathDirectory = buildClassPathDirectory();
     }
 
-    private static String[] buildClassPathDirs() {
+    private static String[] buildClassPathDirectory() {
         List<String> list = new ArrayList<>();
         String[] classPathArray = System.getProperty("java.class.path").split(File.pathSeparator);
         for (String classPath : classPathArray) {
@@ -62,14 +64,10 @@ public class DefaultClassResolver {
                 list.add(classPath);
             }
         }
-        return list.toArray(new String[list.size()]);
+        return list.toArray(Constant.EMPTY_STRING_ARRAY);
     }
 
-    /**
-     * 判断是否为热加载类文件，热加载类文件无条件使用 HotSwapClassLoader 加载
-     * 
-     * 热加载类文件满足两个条件： 1：通过 hotSwapClassPrefix 指定的类文件 2：在 class path 目录下能找到的 .class 文件
-     */
+
     public boolean isHotSwapClass(String className) {
 
         for (String s : hotSwapClassPrefix) {
@@ -79,23 +77,23 @@ public class DefaultClassResolver {
         }
 
         if (isScanAllDir()) {
-            return findClassInClassPathDirs(className);
+            return foundInClassPathDirectory(className);
         }
 
         return false;
     }
 
-    protected boolean findClassInClassPathDirs(String className) {
+    protected boolean foundInClassPathDirectory(String className) {
 
         String fileName = className.replace('.', '/').concat(".class");
 
-        if (classPathDirs.length == 1) {
-            if (findFile(classPathDirs[0], fileName)) {
+        if (classPathDirectory.length == 1) {
+            if (findFile(classPathDirectory[0], fileName)) {
                 return true;
             }
         }
         else {
-            for (String dir : classPathDirs) {
+            for (String dir : classPathDirectory) {
                 if (findFile(dir, fileName)) {
                     return true;
                 }
@@ -105,17 +103,17 @@ public class DefaultClassResolver {
         return false;
     }
 
-    public String getPath(String className) {
-        String fileName = className.replace('.', '/').concat(".class");
-        for (String dir : classPathDirs) {
-            File file = new File(dir, fileName);
-            if (file.exists()) {
-//				return file.getAbsolutePath();
-                return file.getName();
-            }
-        }
-        return null;
-    }
+//    public String getPath(String className) {
+//        String fileName = className.replace('.', '/').concat(".class");
+//        for (String dir : classPathDirs) {
+//            File file = new File(dir, fileName);
+//            if (file.exists()) {
+////				return file.getAbsolutePath();
+//                return file.getName();
+//            }
+//        }
+//        return null;
+//    }
 
     protected boolean findFile(String filePath, String fileName) {
         return new File(filePath, fileName).isFile();
