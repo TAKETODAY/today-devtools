@@ -73,6 +73,9 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
 
     };
 
+    private URL[] urLs;
+    private boolean scanAllDir = true;
+
     static {
         watchingDirs = buildWatchingPaths();
     }
@@ -150,11 +153,13 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
                     continue;
                 }
             }
+            catch (InterruptedException e) {
+                running = false;
+                Thread.currentThread().interrupt();
+                break;
+            }
             catch (Exception e) {
                 running = false;
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
                 break;
             }
             List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
@@ -231,9 +236,6 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
         this.applicationContext = applicationContext;
     }
 
-    private URL[] urLs;
-    private boolean scanAllDir = true;
-
     @Override
     public void afterPropertiesSet() throws Exception {
 
@@ -247,7 +249,7 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
         }
 
         HOT_SWAP_RESOLVER.addHotSwapClassPrefix(hotSwapClassPrefix);
-        HOT_SWAP_RESOLVER.setScanAllDir(scanAllDir);;
+        HOT_SWAP_RESOLVER.setScanAllDir(scanAllDir);
 
         start();
     }
