@@ -67,7 +67,6 @@ public class DefaultClassResolver {
         return list.toArray(Constant.EMPTY_STRING_ARRAY);
     }
 
-
     public boolean isHotSwapClass(String className) {
 
         for (String s : hotSwapClassPrefix) {
