@@ -5,9 +5,9 @@
     <artifactId>today-devtools</artifactId>
     
     <!--
-     <version>1.0.0.RELEASE</version> 
-     -->
     <version>latest</version>
+     -->
+    <version>1.0.0.RELEASE</version>
 
     <name>TODAY Dev Tools</name>
 
@@ -21,7 +21,7 @@
         </license>
     </licenses>
 
-    <url>https://taketoday.cn</url>
+    <url>https://github.com/TAKETODAY/today-devtools</url>
     <organization>
         <name>TODAY</name>
         <url>https://taketoday.cn</url>
@@ -47,6 +47,7 @@
     </issueManagement>
 
     <dependencies>
+
         <dependency>
             <groupId>cn.taketoday</groupId>
             <artifactId>today-framework</artifactId>
@@ -82,29 +83,12 @@
         </dependency>
 
         <dependency>
-            <groupId>cn.taketoday</groupId>
-            <artifactId>today-context</artifactId>
-            <version>latest</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.taketoday</groupId>
-            <artifactId>today-tomcat</artifactId>
-            <version>1.0.0.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
             <version>2.3.28</version>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>cn.taketoday</groupId>
-            <artifactId>today-web</artifactId>
-            <version>latest</version>
-        </dependency>
     </dependencies>
 
     <profiles>
