@@ -195,7 +195,6 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
 
     protected void replaceClassLoader() {
 //		if (!enableJrebel) {
-        ClassUtils.setClassCache(null);
         ClassUtils.setClassLoader(new DefaultReloadClassLoader(urLs, parent, HOT_SWAP_RESOLVER));
 //		}
     }
