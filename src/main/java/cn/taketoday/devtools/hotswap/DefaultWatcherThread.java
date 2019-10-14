@@ -178,7 +178,7 @@ public class DefaultWatcherThread extends Thread implements InitializingBean {
                     applicationContext.close();
 
                     replaceClassLoader();
-                    applicationContext = WebApplication.run(applicationContext.getStartupClass());
+                    WebApplication.run(applicationContext.getStartupClass());
 
                     resetWatchKey();
                     while ((watchKey = watcher.poll()) != null) {
