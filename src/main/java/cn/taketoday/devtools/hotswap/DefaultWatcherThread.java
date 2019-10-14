@@ -44,7 +44,6 @@ import cn.taketoday.context.factory.InitializingBean;
 import cn.taketoday.context.utils.ClassUtils;
 import cn.taketoday.framework.WebApplication;
 import cn.taketoday.framework.WebServerApplicationContext;
-import cn.taketoday.framework.aware.WebServerApplicationContextAware;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -55,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 @Props(prefix = "devtools.hotswap.")
-public class DefaultWatcherThread extends Thread implements InitializingBean, WebServerApplicationContextAware {
+public class DefaultWatcherThread extends Thread implements InitializingBean {
 
     private volatile WatchKey watchKey;
     private static final List<Path> watchingDirs;
@@ -80,7 +79,9 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
         watchingDirs = buildWatchingPaths();
     }
 
-    public DefaultWatcherThread() {
+    public DefaultWatcherThread(WebServerApplicationContext applicationContext) {
+
+        this.applicationContext = applicationContext;
 
         setName("Watcher-" + reloadCount++);
 
@@ -126,7 +127,7 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
         }
         catch (Throwable e) {
             log.error("Error occurred", e);
-//			throw new ContextException(e);
+            //			throw new ContextException(e);
         }
     }
 
@@ -139,10 +140,10 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
 
         for (Path path : watchingDirs) {
             path.register(
-                    watcher,
-                    StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY,
-                    StandardWatchEventKinds.ENTRY_CREATE);
+                          watcher,
+                          StandardWatchEventKinds.ENTRY_DELETE,
+                          StandardWatchEventKinds.ENTRY_MODIFY,
+                          StandardWatchEventKinds.ENTRY_CREATE);
         }
 
         while (running) {
@@ -177,7 +178,7 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
                     applicationContext.close();
 
                     replaceClassLoader();
-                    WebApplication.run(applicationContext.getStartupClass());
+                    applicationContext = WebApplication.run(applicationContext.getStartupClass());
 
                     resetWatchKey();
                     while ((watchKey = watcher.poll()) != null) {
@@ -194,9 +195,9 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
     }
 
     protected void replaceClassLoader() {
-//		if (!enableJrebel) {
+        //		if (!enableJrebel) {
         ClassUtils.setClassLoader(new DefaultReloadClassLoader(urLs, parent, HOT_SWAP_RESOLVER));
-//		}
+        //		}
     }
 
     protected void resetWatchKey() {
@@ -222,7 +223,7 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
 
         running = false;
         try {
-//            interrupt();
+            //            interrupt();
             join();
         }
         catch (Exception e) {
@@ -231,15 +232,10 @@ public class DefaultWatcherThread extends Thread implements InitializingBean, We
     }
 
     @Override
-    public void setWebServerApplicationContext(WebServerApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
-    @Override
     public void afterPropertiesSet() throws Exception {
 
         this.parent = ClassUtils.getClassLoader();
-//        System.err.println(parent);
+        //        System.err.println(parent);
         if (parent instanceof URLClassLoader) {
             urLs = ((URLClassLoader) parent).getURLs();
         }
