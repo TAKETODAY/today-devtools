@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cn.taketoday.context.Constant;
-
 /**
  * 
  * @author TODAY <br>
@@ -64,7 +62,7 @@ public class DefaultClassResolver {
                 list.add(classPath);
             }
         }
-        return list.toArray(Constant.EMPTY_STRING_ARRAY);
+        return list.toArray(new String[list.size()]);
     }
 
     public boolean isHotSwapClass(String className) {
