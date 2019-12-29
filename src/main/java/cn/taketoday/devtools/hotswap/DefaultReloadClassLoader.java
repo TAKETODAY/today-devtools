@@ -55,8 +55,9 @@ public class DefaultReloadClassLoader extends URLClassLoader {
             }
 
             if (hotSwapResolver.isHotSwapClass(name)) {
-                log.trace("Hot Swap Class: [{}]", name);
-
+                if (log.isTraceEnabled()) {
+                    log.trace("Hot Swap Class: [{}]", name);
+                }
                 c = super.findClass(name);
                 if (c != null) {
                     if (resolve) {

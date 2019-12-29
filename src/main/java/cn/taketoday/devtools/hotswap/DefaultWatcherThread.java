@@ -19,6 +19,8 @@
  */
 package cn.taketoday.devtools.hotswap;
 
+import static cn.taketoday.context.utils.ClassUtils.loadClass;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -103,7 +105,9 @@ public class DefaultWatcherThread extends Thread implements InitializingBean {
         List<Path> pathList = new ArrayList<Path>(dirList.size());
         for (String dir : dirList) {
             if (!dir.contains("META-INF")) {
-                log.trace("Watching dir: [{}]", dir);
+                if (log.isTraceEnabled()) {
+                    log.trace("Watching dir: [{}]", dir);
+                }
                 pathList.add(Paths.get(dir));
             }
         }
@@ -169,7 +173,7 @@ public class DefaultWatcherThread extends Thread implements InitializingBean {
                 String fileName = ev.context().toString();
 
                 final Kind<?> kind = ev.kind();
-
+                
                 log.info("File: [{}] changed, type: [{}]", fileName, kind);
                 if (StandardWatchEventKinds.ENTRY_MODIFY == kind && fileName.endsWith(".class")) {
                     if (!applicationContext.hasStarted()) {
@@ -178,7 +182,9 @@ public class DefaultWatcherThread extends Thread implements InitializingBean {
                     applicationContext.close();
 
                     replaceClassLoader();
-                    WebApplication.run(applicationContext.getStartupClass());
+
+                    final Class<Object> startupClass = loadClass(applicationContext.getStartupClass().getName());
+                    WebApplication.run(startupClass);
 
                     resetWatchKey();
                     while ((watchKey = watcher.poll()) != null) {
